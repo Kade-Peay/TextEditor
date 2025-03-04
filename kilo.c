@@ -19,6 +19,10 @@ struct termios orig_termios;
 
 void die(const char *s)
 {
+    // Clear the screen on exit
+    write(STDOUT_FILENO, "\x1b[2J", 4); // clear screen
+    write(STDOUT_FILENO, "\x1b[H", 3);  // reposition cursor
+
     perror(s);
     exit(1);
 }
@@ -61,6 +65,28 @@ char editorReadKey()
     return c;
 }
 
+/*** output ***/
+
+void editorDrawRows()
+{
+    // int y;
+    // Draw a column of tildes on the left hand side like vim
+    for (int y = 0; y < 24; y++)
+    {
+        write(STDOUT_FILENO, "~\r\n", 3);
+    }
+}
+
+void editorRefreshScreen()
+{
+    write(STDOUT_FILENO, "\x1b[2J", 4); // clear screen
+    write(STDOUT_FILENO, "\x1b[H", 3);  // reposition cursor
+
+    editorDrawRows();
+
+    write(STDOUT_FILENO, "\x1b[H", 3);
+}
+
 /*** input ***/
 
 void editorProcessKeypress()
@@ -70,6 +96,8 @@ void editorProcessKeypress()
     switch (c)
     {
     case CTRL_KEY('q'):
+        write(STDOUT_FILENO, "\x1b[2J", 4); // clear screen
+        write(STDOUT_FILENO, "\x1b[H", 3);  // reposition cursor
         exit(0);
         break;
     }
@@ -83,6 +111,7 @@ int main()
 
     while (1)
     {
+        editorRefreshScreen();
         editorProcessKeypress();
     }
 
