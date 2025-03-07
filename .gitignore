@@ -1,3 +1,6 @@
+# Custom shell script for clang
+clean.sh
+
 # Prerequisites
 *.d
 
