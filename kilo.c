@@ -848,6 +848,9 @@ void editorScroll() {
 
 void editorDrawRows(struct abuf *ab)
 {
+    // calculate the width of line numbers
+    int line_num_width = snprintf(NULL, 0, "%d", E.numrows) + 1; // +1 for extra padding
+
     // Draw a column of tildes on the left hand side like vim
     for (int y = 0; y < E.screenrows; y++)
     {
@@ -882,6 +885,12 @@ void editorDrawRows(struct abuf *ab)
                 abAppend(ab, "~", 1);
             }
         } else {
+            // Draw line numbers 
+            char line_num[32];
+            int line_num_len = snprintf(line_num, sizeof(line_num), "%*d ", line_num_width, filerow + 1);
+            abAppend(ab, line_num, line_num_len);
+
+            // draw line numbers
             int len = E.row[filerow].rsize - E.coloff;
             if (len < 0) len = 0;
             if (len > E.screencols) len = E.screencols;
